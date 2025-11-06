@@ -13,26 +13,44 @@ const storage = multer.diskStorage({
   },
 });
 
-export const upload = multer({ storage });
-
-// POST /api/videos/upload
 export const uploadVideo = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ message: "No video file uploaded" });
+    console.log("req.body:", req.body);
+    console.log(" req.file:", req.file);
+
+    // Parse quizQuestions if sent
+    let quizQuestions = [];
+    if (req.body.quizQuestions) {
+      try {
+        quizQuestions = JSON.parse(req.body.quizQuestions);
+        console.log(" Parsed quizQuestions:", quizQuestions);
+      } catch (err) {
+        console.log(" Invalid quizQuestions JSON");
+        return res.status(400).json({ message: "Invalid quizQuestions JSON" });
+      }
+    }
 
     const newVideo = await Video.create({
-      title: req.body.title || "Untitled Video",
-      fileName: req.file.filename,
-      videoUrl: `http://localhost:${process.env.PORT || 5000}/uploads/${req.file.filename}`,
-      size: req.file.size,
-      mimeType: req.file.mimetype,
+      title: req.body.title,
+      description: req.body.description,
+      date: req.body.date ? new Date(req.body.date) : undefined,
+      videoUrl: req.file ? `http://localhost:5000/uploads/${req.file.filename}` : null,
+      fileName: req.file ? req.file.filename : null,
+      size: req.file ? req.file.size : null,
+      mimeType: req.file ? req.file.mimetype : null,
+      quizQuestions,
     });
 
+    console.log("✅ Video saved:", newVideo);
     res.status(201).json({ success: true, video: newVideo });
   } catch (error) {
+    console.error("❌ Video upload failed:", error);
     res.status(500).json({ message: "Video upload failed", error: error.message });
   }
 };
+
+
+
 
 // GET /api/videos
 export const getAllVideos = async (req, res) => {
