@@ -14,6 +14,11 @@ app.use("/uploads", express.static("uploads")); // serve uploaded files
 // Routes
 app.use("/api/videos", videoRoutes);
 
+// Default route
+app.get("/", (req, res) => {
+  res.send("Super Admin Backend is running !");
+});
+
 // MongoDB connection
 const PORT = process.env.PORT || 5000;
 mongoose
