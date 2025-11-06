@@ -4,14 +4,14 @@ import { uploadVideo, getAllVideos } from "../controllers/videoController.js";
 
 const router = express.Router();
 
-// configure multer
+// multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
 const upload = multer({ storage });
 
-// optional video: metadata-only uploads now work
+// Routes
 router.post("/upload", upload.single("video"), uploadVideo);
 router.get("/", getAllVideos);
 
